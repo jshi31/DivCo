@@ -74,8 +74,8 @@ for i, data in enumerate(dataset):
             dist_sum += dist
     dist_avg = (dist_sum / (len(gen_imgs) * (len(gen_imgs) - 1) / 2)).reshape(1, 1)
     lpips_score = lpips_score * (1 - 1/itr) + dist_avg/itr
-    if itr % 100 == 0:
-        print('{}/{} lpips: {:.4f}'.format(itr, len(dataset), lpips_score))
+    if itr % 100 == 1:
+        print('{}/{} lpips: {:.4f}'.format(itr, len(dataset), lpips_score.item()))
 
     img_path = 'input_%3.3d' % i
     if opt.viz:
