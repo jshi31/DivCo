@@ -43,9 +43,12 @@ if opt.sync:
 # Init the LPIPS
 lpips_fn = lpips.LPIPS(net='alex', version='0.1').to('cuda')
 lpips_score = 0
+
+
 # test stage
 #for i, data in enumerate(islice(dataset, opt.num_test)):
 for i, data in enumerate(dataset):
+    itr = i + 1
     print(data['A_paths'])
     model.set_input(data)
     print('process input image %3.3d/%3.3d' % (i, opt.num_test))
@@ -70,7 +73,6 @@ for i, data in enumerate(dataset):
             dist = lpips_fn.forward(gen_imgs[i], gen_imgs[j]).detach()  # scale [-1 ,1]
             dist_sum += dist
     dist_avg = (dist_sum / (len(gen_imgs) * (len(gen_imgs) - 1) / 2)).reshape(1, 1)
-    itr = i + 1
     lpips_score = lpips_score * (1 - 1/itr) + dist_avg/itr
     if itr % 100 == 0:
         print('{}/{} lpips: {:.4f}'.format(itr, len(dataset), lpips_score))
@@ -78,5 +80,6 @@ for i, data in enumerate(dataset):
     img_path = 'input_%3.3d' % i
     if opt.viz:
         save_images(webpage, images, names, img_path, aspect_ratio=opt.aspect_ratio, width=opt.crop_size)
+print('lpips {:.4f}'.format(lpips_score))
 if opt.viz:
     webpage.save()
