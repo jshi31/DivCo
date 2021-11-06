@@ -5,7 +5,8 @@ from models import create_model
 from util.visualizer import save_images
 from itertools import islice
 from util import html
-
+import pdb
+import lpips
 
 # options
 opt = TestOptions().parse()
@@ -39,6 +40,9 @@ webpage = html.HTML(web_dir, 'Training = %s, Phase = %s, Class =%s' % (opt.name,
 if opt.sync:
     z_samples = model.get_z_random(opt.n_samples + 1, opt.nz)
 
+# Init the LPIPS
+lpips_fn = lpips.LPIPS(net='alex', version='0.1').to('cuda')
+lpips_score = 0
 # test stage
 #for i, data in enumerate(islice(dataset, opt.num_test)):
 for i, data in enumerate(dataset):
@@ -47,6 +51,7 @@ for i, data in enumerate(dataset):
     print('process input image %3.3d/%3.3d' % (i, opt.num_test))
     if not opt.sync:
         z_samples = model.get_z_random(opt.n_samples + 1, opt.nz)
+    gen_imgs = []
     for nn in range(opt.n_samples + 1):
         encode = nn == 0 and not opt.no_encode
         real_A, fake_B, real_B = model.test(z_samples[[nn]], encode=encode)
@@ -56,8 +61,23 @@ for i, data in enumerate(dataset):
         else:
             images.append(fake_B)
             names.append('random_sample%2.2d' % nn)
+            gen_imgs.append(fake_B)
+
+    # Compute LPIPS
+    pdb.set_trace()
+    dist_sum = 0
+    for i in range(len(gen_imgs) - 1):
+        for j in range(i + 1, len(gen_imgs)):
+            dist = lpips_fn.forward(gen_imgs[i], gen_imgs[j]).detach()  # scale [-1 ,1]
+            dist_sum += dist
+    dist_avg = (dist_sum / (len(gen_imgs) * (len(gen_imgs) - 1) / 2)).reshape(1, 1)
+    itr = i + 1
+    lpips_score = lpips_score * (1 - 1/itr) + dist_avg/itr
+    if itr % 100 == 0:
+        print('{}/{} lpips: {:.4f}'.format(itr, len(dataset), lpips_score))
 
     img_path = 'input_%3.3d' % i
-    save_images(webpage, images, names, img_path, aspect_ratio=opt.aspect_ratio, width=opt.crop_size)
-
-webpage.save()
+    if opt.viz:
+        save_images(webpage, images, names, img_path, aspect_ratio=opt.aspect_ratio, width=opt.crop_size)
+if opt.viz:
+    webpage.save()
