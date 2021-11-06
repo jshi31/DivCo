@@ -73,13 +73,13 @@ for i, data in enumerate(dataset):
             dist = lpips_fn.forward(gen_imgs[i], gen_imgs[j]).detach()  # scale [-1 ,1]
             dist_sum += dist
     dist_avg = (dist_sum / (len(gen_imgs) * (len(gen_imgs) - 1) / 2)).reshape(1, 1)
-    lpips_score = lpips_score * (1 - 1/itr) + dist_avg/itr
+    lpips_score = lpips_score * (1 - 1/itr) + dist_avg.item()/itr
     if itr % 100 == 1:
-        print('{}/{} lpips: {:.4f}'.format(itr, len(dataset), lpips_score.item()))
+        print('{}/{} lpips: {:.4f}'.format(itr, len(dataset), lpips_score))
 
     img_path = 'input_%3.3d' % i
     if opt.viz:
         save_images(webpage, images, names, img_path, aspect_ratio=opt.aspect_ratio, width=opt.crop_size)
-print('lpips {:.4f}'.format(lpips_score))
+print('lpips {:.4f}'.format(lpips_score.item()))
 if opt.viz:
     webpage.save()
