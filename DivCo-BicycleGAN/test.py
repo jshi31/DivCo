@@ -64,7 +64,6 @@ for i, data in enumerate(dataset):
             gen_imgs.append(fake_B)
 
     # Compute LPIPS
-    pdb.set_trace()
     dist_sum = 0
     for i in range(len(gen_imgs) - 1):
         for j in range(i + 1, len(gen_imgs)):
