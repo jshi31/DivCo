@@ -67,9 +67,9 @@ for i, data in enumerate(dataset):
 
     # Compute LPIPS
     dist_sum = 0
-    for i in range(len(gen_imgs) - 1):
-        for j in range(i + 1, len(gen_imgs)):
-            dist = lpips_fn.forward(gen_imgs[i], gen_imgs[j]).detach()  # scale [-1 ,1]
+    for ii in range(len(gen_imgs) - 1):
+        for j in range(ii + 1, len(gen_imgs)):
+            dist = lpips_fn.forward(gen_imgs[ii], gen_imgs[j]).detach()  # scale [-1 ,1]
             dist_sum += dist
     dist_avg = (dist_sum / (len(gen_imgs) * (len(gen_imgs) - 1) / 2)).reshape(1, 1)
     lpips_score = lpips_score * (1 - 1/itr) + dist_avg.item()/itr
