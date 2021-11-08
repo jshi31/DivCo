@@ -64,6 +64,11 @@ for i, data in enumerate(dataset):
             images.append(fake_B)
             names.append('random_sample%2.2d' % nn)
             gen_imgs.append(fake_B)
+    img_path = 'input_%3.3d' % i
+    if opt.viz:
+        save_images(webpage, images, names, img_path, aspect_ratio=opt.aspect_ratio, width=opt.crop_size)
+        if itr > 500:
+            break
 
     # Compute LPIPS
     dist_sum = 0
@@ -76,11 +81,6 @@ for i, data in enumerate(dataset):
     if itr % 100 == 1:
         print('{}/{} lpips: {:.4f}'.format(itr, len(dataset), lpips_score))
 
-    img_path = 'input_%3.3d' % i
-    if opt.viz:
-        save_images(webpage, images, names, img_path, aspect_ratio=opt.aspect_ratio, width=opt.crop_size)
-        if itr > 500:
-            break
 print('lpips {:.4f}'.format(lpips_score))
 if opt.viz:
     webpage.save()
