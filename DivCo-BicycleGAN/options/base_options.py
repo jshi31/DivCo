@@ -28,7 +28,7 @@ class BaseOptions():
         parser.add_argument('--preprocess', type=str, default='resize_and_crop', help='not implemented')
         parser.add_argument('--dataset_mode', type=str, default='aligned', help='aligned,single')
         parser.add_argument('--model', type=str, default='divco', help='chooses which model to use. bicycle,, ...')
-        parser.add_argument('--direction', type=str, default='BtoA', help='AtoB or BtoA')
+        parser.add_argument('--direction', type=str, default='AtoB', help='AtoB or BtoA')
         parser.add_argument('--epoch', type=str, default='latest', help='which epoch to load? set to latest to use latest cached model')
         parser.add_argument('--num_threads', default=4, type=int, help='# sthreads for loading data')
         parser.add_argument('--checkpoints_dir', type=str, default='./results', help='models are saved here')
