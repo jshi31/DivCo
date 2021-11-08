@@ -67,7 +67,7 @@ for i, data in enumerate(dataset):
     img_path = 'input_%3.3d' % i
     if opt.viz:
         save_images(webpage, images, names, img_path, aspect_ratio=opt.aspect_ratio, width=opt.crop_size)
-        if itr > 500:
+        if itr > opt.num_test:
             break
 
     # Compute LPIPS
